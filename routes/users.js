@@ -107,27 +107,87 @@ router.post("/login", function (req, res, next) {
 
 //UPDATE A USER
 router.post("/edit", isLoggedIn, (req, res) => {
-User.findByIdAndUpdate(req.user._id, { username: req.body.username}, {new: true})
-.then((updatedUser) => {
-  res.json(updatedUser)
-  })
-  .catch((err) => {
-    res.json(err.message);
-  });
-})
-
-//DELETE A USER
-router.post("/delete", isLoggedIn, (req, res) => {
-  User.findByIdAndDelete(req.user._id, {new: true})
-  .then((deletedUser) => {
-    res.json(deletedUser)
+  User.findByIdAndUpdate(
+    req.user._id,
+    { username: req.body.username },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      res.json(updatedUser);
     })
     .catch((err) => {
       res.json(err.message);
     });
-  })
+});
 
+//DELETE A USER
+router.post("/delete", isLoggedIn, (req, res) => {
+  User.findByIdAndDelete(req.user._id, { new: true })
+    .then((deletedUser) => {
+      res.json(deletedUser);
+    })
+    .catch((err) => {
+      res.json(err.message);
+    });
+});
 
+//SNED A Friend:
+router.post("/:id/invite", isLoggedIn, (req, res) => {
+  User.findByIdAndUpdate(
+    req.params.id,
+    { $push: { friendRequest: req.user._id } },
+    { new: true }
+  )
+    .then((foundUser) => {
+      res.json(foundUser);
+    })
+    .catch((err) => {
+      res.json(err.message);
+    });
+});
+
+//ACCEPT
+router.post("/:id/accept", isLoggedIn, (req, res) => {
+  User.findByIdAndUpdate(
+    req.params.id,
+    { $push: { friends: req.user._id } },
+    { new: true }
+  )
+    .then((foundUser) => {
+      User.findByIdAndUpdate(
+        req.user._id,
+        {
+          $push: { friends: req.params.id },
+          $pull: { friendRequest: req.params.id },
+        },
+        { new: true }
+      )
+        .then((updatedUser) => {
+          res.json(updatedUser);
+        })
+        .catch((err) => {
+          res.json(err.message);
+        });
+    })
+    .catch((err) => {
+      res.json(err.message);
+    });
+});
+
+//REJECT
+router.post("/:id/reject", isLoggedIn, (req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    { $pull: { friendRequest: req.params.id } },
+    { new: true }
+  )
+    .then((removedUser) => {
+      res.json(removedUser);
+    })
+    .catch((err) => {
+      res.json(err.message);
+    });
+});
 
 router.get("/login-test", isLoggedIn, (req, res) => {
   console.log("USER", req.user);
