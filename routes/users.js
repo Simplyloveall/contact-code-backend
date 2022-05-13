@@ -18,7 +18,7 @@ router.post("/signup", function (req, res, next) {
   //1. Make sure fields are filled out
 
   if (!req.body.username || !req.body.password) {
-    return res.json({ message: "Please fill out all fields" });
+    return res.status(400).json({ message: "Please fill out all fields" });
   }
 
   //2. Make sure username isn't taken
@@ -26,7 +26,7 @@ router.post("/signup", function (req, res, next) {
   User.findOne({ username: req.body.username })
     .then((foundUser) => {
       if (foundUser) {
-        return res.json({ message: "Username is taken" });
+        return res.status(400).json({ message: "Username is taken" });
       } else {
         //3. hash the password
         //3.1 generate the salt
