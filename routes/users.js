@@ -17,16 +17,24 @@ router.get("/", function (req, res, next) {
 router.post("/signup", function (req, res, next) {
   //1. Make sure fields are filled out
 
-  if (!req.body.username || !req.body.password) {
+  if (
+    !req.body.contactCode ||
+    !req.body.email ||
+    !req.body.password ||
+    !req.body.firstName ||
+    !req.body.lastName
+  ) {
     return res.status(400).json({ message: "Please fill out all fields" });
   }
 
   //2. Make sure username isn't taken
 
-  User.findOne({ username: req.body.username })
+  User.findOne({ contactCode: req.body.contactCode })
     .then((foundUser) => {
       if (foundUser) {
-        return res.status(400).json({ message: "Username is taken" });
+        return res
+          .status(400)
+          .json({ message: "This contact-code is taken, claim yours now!" });
       } else {
         //3. hash the password
         //3.1 generate the salt
@@ -36,8 +44,11 @@ router.post("/signup", function (req, res, next) {
 
         //4.Create the account
         User.create({
-          username: req.body.username,
+          contactCode: req.body.contactCode,
+          email: req.body.email,
           password: hashedPassword,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
         })
           .then((createdUser) => {
             //5. Create the JSON Web Token (JWT)
@@ -65,16 +76,16 @@ router.post("/signup", function (req, res, next) {
 
 router.post("/login", function (req, res, next) {
   //1. make sure fields are valid
-  if (!req.body.username || !req.body.password) {
+  if (!req.body.contactCode || !req.body.password) {
     return res.json({ message: "Please fill out all fields" });
   }
 
   //2. check username
-  User.findOne({ username: req.body.username })
+  User.findOne({ contactCode: req.body.contactCode })
     .then((foundUser) => {
       //2.1 Make sure user exists
       if (!foundUser) {
-        return res.json({ message: "Username or password incorrect" });
+        return res.json({ message: "contact-code or password incorrect" });
       }
 
       //2.2 Make sure passwords match
@@ -97,7 +108,7 @@ router.post("/login", function (req, res, next) {
 
         res.json({ token: token });
       } else {
-        return res.json({ message: "Username or password incorrect" });
+        return res.json({ message: "contact-code or password incorrect" });
       }
     })
     .catch((err) => {
@@ -109,7 +120,7 @@ router.post("/login", function (req, res, next) {
 router.post("/edit", isLoggedIn, (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
-    { username: req.body.username },
+    { contactCode: req.body.contactCode },
     { new: true }
   )
     .then((updatedUser) => {
@@ -188,6 +199,28 @@ router.post("/:id/reject", isLoggedIn, (req, res) => {
       res.json(err.message);
     });
 });
+
+const fileUploader = require("../middleware/cloudinary.config");
+
+router.post(
+  "/image-test",
+  isLoggedIn,
+  fileUploader.single("imageUrl"),
+  function (req, res, next) {
+    res.json(req.file);
+
+    User.create({
+      contactCode: req.body.contactCode,
+      profilePicture: req.file.path,
+    })
+      .then((createdphoto) => {
+        res.json(createdphoto);
+      })
+      .catch((err) => {
+        res.json(err.message);
+      });
+  }
+);
 
 router.get("/login-test", isLoggedIn, (req, res) => {
   console.log("USER", req.user);
