@@ -5,6 +5,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv/config");
 
+const fileUploader = require("../middleware/cloudinary.config");
+
 const isLoggedIn = require("../middleware/isLoggedIn");
 
 const saltRounds = 10;
@@ -118,9 +120,22 @@ router.post("/login", function (req, res, next) {
 
 //UPDATE A USER
 router.post("/edit", isLoggedIn, (req, res) => {
+  const removeFalsy = (obj) => {
+    let newObj = {};
+    Object.keys(obj).forEach((prop) => {
+      if (obj[prop]) {
+        newObj[prop] = obj[prop];
+      }
+    });
+    return newObj;
+  };
+
+  let updateInfo = removeFalsy(req.body);
+
   User.findByIdAndUpdate(
     req.user._id,
-    { contactCode: req.body.contactCode },
+    // { contactCode: req.body.contactCode },
+    { ...updateInfo },
     { new: true }
   )
     .then((updatedUser) => {
@@ -132,13 +147,22 @@ router.post("/edit", isLoggedIn, (req, res) => {
 });
 
 //DELETE A USER
-router.post("/delete", isLoggedIn, (req, res) => {
-  User.findByIdAndDelete(req.user._id, { new: true })
-    .then((deletedUser) => {
-      res.json(deletedUser);
+router.post("/delete-profile", isLoggedIn, (req, res, next) => {
+  User.findById(req.user._id)
+    .then((foundUser) => {
+      const doesMatch = bcrypt.compareSync(
+        req.body.password,
+        foundUser.password
+      );
+      if (doesMatch) {
+        foundUser.delete();
+        res.json({ message: "success" });
+      } else {
+        res.status(401).json({ message: "password doesn't match" });
+      }
     })
-    .catch((err) => {
-      res.json(err.message);
+    .catch((error) => {
+      res.status(400).json(error.message);
     });
 });
 
@@ -200,18 +224,16 @@ router.post("/:id/reject", isLoggedIn, (req, res) => {
     });
 });
 
-const fileUploader = require("../middleware/cloudinary.config");
-
 router.post(
   "/image-test",
   isLoggedIn,
-  fileUploader.single("imageUrl"),
+  // fileUploader.single("imageUrl"),
   function (req, res, next) {
-    res.json(req.file);
+    // res.json(req.file);
 
     User.create({
       contactCode: req.body.contactCode,
-      profilePicture: req.file.path,
+      profilePicture: req.body.image,
     })
       .then((createdphoto) => {
         res.json(createdphoto);
@@ -222,9 +244,28 @@ router.post(
   }
 );
 
+router.get("/profile-info", isLoggedIn, function (req, res, next) {
+  User.findById(req.user._id)
+    .then((foundUser) => {
+      res.json(foundUser);
+    })
+    .catch((err) => {
+      res.json(err.message);
+    });
+});
+
 router.get("/login-test", isLoggedIn, (req, res) => {
   console.log("USER", req.user);
   res.json({ message: "You are logged in" });
 });
+
+router.post(
+  "/image-upload",
+  isLoggedIn,
+  fileUploader.single("imageUrl"),
+  function (req, res) {
+    res.json(req.file.path);
+  }
+);
 
 module.exports = router;
