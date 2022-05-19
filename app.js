@@ -24,7 +24,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 //cors must come about routers
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL],
+    // origin: ['http://localhost:3000'] // if you want to use a local frontend, comment the above line
+  })
+);
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
