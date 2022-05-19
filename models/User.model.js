@@ -28,23 +28,21 @@ const userSchema = new Schema(
       type: String,
       unique: true,
     },
-    address: {
-      street: {
-        type: String,
-      },
-      city: {
-        type: String,
-      },
-      state: {
-        type: String,
-        enum: ["Arizona", "Alabama"],
-      },
-      zipCode: {
-        type: String,
-      },
-      country: {
-        type: String,
-      },
+    street: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+      enum: ["Arizona", "Alabama"],
+    },
+    zipCode: {
+      type: String,
+    },
+    country: {
+      type: String,
     },
     primaryChat: {
       primaryChatName: {

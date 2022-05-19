@@ -256,7 +256,15 @@ router.get("/profile-info", isLoggedIn, function (req, res, next) {
 
 router.get("/login-test", isLoggedIn, (req, res) => {
   console.log("USER", req.user);
-  res.json({ message: "You are logged in" });
+  User.findById(req.user._id)
+    .populate("friendRequest")
+    .populate("friends")
+    .then((foundUser) => {
+      res.json(foundUser);
+    })
+    .catch((err) => {
+      res.json(err.message);
+    });
 });
 
 router.post(
