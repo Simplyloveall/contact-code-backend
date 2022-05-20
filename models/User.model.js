@@ -36,7 +36,7 @@ const userSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["Arizona", "Alabama"],
+      // enum: ["Arizona", "Alabama"],
     },
     zipCode: {
       type: String,
@@ -44,50 +44,28 @@ const userSchema = new Schema(
     country: {
       type: String,
     },
-    primaryChat: {
-      primaryChatName: {
-        type: String,
-        enum: ["Text", "AndroidSMS", "IphoneSMS", "Whatsapp", "Telegram"],
-      },
-      primaryChatLink: {
-        type: String,
-      },
+
+    primaryChatName: {
+      type: String,
+      // enum: ["Text", "AndroidSMS", "IphoneSMS", "Whatsapp", "Telegram"],
     },
-    secondaryChat: {
-      secondaryChatName: {
-        type: String,
-        enum: ["Text", "AndroidSMS", "IphoneSMS", "Whatsapp", "Telegram"],
-      },
-      secondaryChatLink: {
-        type: String,
-      },
+    primaryChatLink: {
+      type: String,
     },
-    primarySocial: {
-      primarySocialName: {
-        type: String,
-        enum: ["Facebook", "Twitter", "Linked-in", "Twitch", "Discord"],
-      },
-      primarySocialLink: {
-        type: String,
-      },
+    primarySocialName: {
+      type: String,
+      // enum: ["Facebook", "Twitter", "Linked-in", "Twitch", "Discord"],
     },
-    secondarySocial: {
-      secondarySocialName: {
-        type: String,
-        enum: ["Facebook", "Twitter", "Linked-in", "Twitch", "Discord"],
-      },
-      secondarySocialLink: {
-        type: String,
-      },
+    primarySocialLink: {
+      type: String,
     },
+
     profilePicture: {
       type: String,
       default:
         "https://gamma.creativecirclecdn.com/liherald/original/20200916-113608-blank-profile-picture.png.jpg",
     },
-    // status: {
-    //   type: String,
-    // },
+
     friends: [
       {
         type: Schema.Types.ObjectId,

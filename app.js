@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
-    // origin: ['http://localhost:3000'] // if you want to use a local frontend, comment the above line
+    // origin: ["http://localhost:3000"], // if you want to use a local frontend, comment the above line
   })
 );
 

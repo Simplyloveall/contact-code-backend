@@ -131,11 +131,12 @@ router.post("/edit", isLoggedIn, (req, res) => {
   };
 
   let updateInfo = removeFalsy(req.body);
-
+  console.log("message", updateInfo);
+  console.log("PIC", updateInfo.profilePicture);
   User.findByIdAndUpdate(
     req.user._id,
     // { contactCode: req.body.contactCode },
-    { ...updateInfo },
+    { ...updateInfo, profilePicture: updateInfo.profilePicture },
     { new: true }
   )
     .then((updatedUser) => {
@@ -168,8 +169,8 @@ router.post("/delete-profile", isLoggedIn, (req, res, next) => {
 
 //SNED A Friend:
 router.post("/:id/invite", isLoggedIn, (req, res) => {
-  User.findByIdAndUpdate(
-    req.params.id,
+  User.findOneAndUpdate(
+    { contactCode: req.params.id },
     { $push: { friendRequest: req.user._id } },
     { new: true }
   )
