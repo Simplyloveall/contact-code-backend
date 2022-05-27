@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
 
+//NOTE: remove console.log()
+//NOTE: remove commented out code
+
 const isLoggedIn = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token || token === "null") {

@@ -16,6 +16,8 @@ router.get("/", function (req, res, next) {
   res.send("respond with a resource");
 });
 
+//NOTE: remove all the comments related to the steps of signing the user up
+
 router.post("/signup", function (req, res, next) {
   //1. Make sure fields are filled out
 
@@ -67,15 +69,18 @@ router.post("/signup", function (req, res, next) {
             res.json({ token: token });
           })
           .catch((err) => {
+            //NOTE: add .status(400) to prevent side effects on the client
             res.json(err.message);
           });
       }
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
 
+//NOTE: remove all the comments related to the steps of signing the user up
 router.post("/login", function (req, res, next) {
   //1. make sure fields are valid
   if (!req.body.contactCode || !req.body.password) {
@@ -87,6 +92,7 @@ router.post("/login", function (req, res, next) {
     .then((foundUser) => {
       //2.1 Make sure user exists
       if (!foundUser) {
+        //NOTE: add .status(400) to prevent side effects on the client
         return res.json({ message: "contact-code or password incorrect" });
       }
 
@@ -110,10 +116,12 @@ router.post("/login", function (req, res, next) {
 
         res.json({ token: token });
       } else {
+        //NOTE: add .status(400) to prevent side effects on the client
         return res.json({ message: "contact-code or password incorrect" });
       }
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
@@ -143,6 +151,7 @@ router.post("/edit", isLoggedIn, (req, res) => {
       res.json(updatedUser);
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
@@ -167,6 +176,7 @@ router.post("/delete-profile", isLoggedIn, (req, res, next) => {
     });
 });
 
+//NOTE: sned
 //SNED A Friend:
 router.post("/:id/invite", isLoggedIn, (req, res) => {
   User.findOneAndUpdate(
@@ -178,6 +188,7 @@ router.post("/:id/invite", isLoggedIn, (req, res) => {
       res.json(foundUser);
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
@@ -206,6 +217,7 @@ router.post("/:id/accept", isLoggedIn, (req, res) => {
         });
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
@@ -221,6 +233,7 @@ router.post("/:id/reject", isLoggedIn, (req, res) => {
       res.json(removedUser);
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
@@ -240,6 +253,7 @@ router.post(
         res.json(createdphoto);
       })
       .catch((err) => {
+        //NOTE: add .status(400) to prevent side effects on the client
         res.json(err.message);
       });
   }
@@ -251,6 +265,7 @@ router.get("/profile-info", isLoggedIn, function (req, res, next) {
       res.json(foundUser);
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });
@@ -264,6 +279,7 @@ router.get("/login-test", isLoggedIn, (req, res) => {
       res.json(foundUser);
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
       res.json(err.message);
     });
 });

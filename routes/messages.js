@@ -9,6 +9,7 @@ const accountSid = process.env.SID;
 const authToken = process.env.AUTH_TOKEN;
 const fromPhone = process.env.FROM_PHONE;
 
+//NOTE: remove console.log() and commented out lines
 console.log("accountSid", accountSid);
 console.log("authToken", authToken);
 console.log("fromPhone", fromPhone);
@@ -26,6 +27,8 @@ router.post("/", isLoggedIn, function (req, res, next) {
     })
     .then((message) => console.log(message.sid))
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
+      //NOTE: add .json(), not console.log
       console.log("error", err.message);
     });
 });
@@ -36,16 +39,21 @@ router.post("/:recipientId/send", isLoggedIn, function (req, res, next) {
       client.messages
         .create({
           to: foundUser.phone,
+          //NOTE: remove commented out line
           // to: req.body.number,
           from: fromPhone,
           body: req.body.message,
         })
         .then((message) => res.json(message.sid))
         .catch((err) => {
+          //NOTE: add .status(400) to prevent side effects on the client
+          //NOTE: add .json(), not console.log
           console.log("error", err.message);
         });
     })
     .catch((err) => {
+      //NOTE: add .status(400) to prevent side effects on the client
+      //NOTE: add .json(), not console.log
       console.log("error", err.message);
     });
 });
